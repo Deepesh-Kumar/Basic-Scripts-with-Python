@@ -13,9 +13,9 @@ IP = raw_input('Enter the IP: ')
 username = raw_input('Enter the username:  ')
 password = raw_input('Enter the password:  ')
 uri = 'https://' + IP + ':8443/dataservice/device'
-r = s.get(uri, auth=HTTPBasicAuth(username, password), verify=False)
-a = r.json()
-for i in a['data']:
+response = s.get(uri, auth=HTTPBasicAuth(username, password), verify=False)
+response_data = response.json()
+for i in response_data['data']:
 	if i['personality'] == 'vedge':
 		print i['version'],i['local-system-ip'],i['host-name']
 
