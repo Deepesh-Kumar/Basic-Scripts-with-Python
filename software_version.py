@@ -1,3 +1,8 @@
+
+#Simple Python Script to get Software Versions of Devices(vEdges) using an API Call, we use json module to get data in a 
+#list format, and filter the required data
+
+
 import json
 import requests
 from requests.auth import HTTPBasicAuth
@@ -10,13 +15,10 @@ password = raw_input('Enter the password:  ')
 uri = 'https://' + IP + ':8443/dataservice/device'
 r = s.get(uri, auth=HTTPBasicAuth(username, password), verify=False)
 a = r.json()
-#print type(a['data'])
-
 for i in a['data']:
 	if i['personality'] == 'vedge':
 		print i['version'],i['local-system-ip'],i['host-name']
-#b = json.loads(a)
-#print b
+
 
 
 
