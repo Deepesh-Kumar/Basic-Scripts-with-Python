@@ -30,7 +30,10 @@ from requests.auth import HTTPBasicAuth
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 s = requests.session()
-uri = 'https://34.203.116.253:8443/dataservice/device/action/rediscover'
+IP = raw_input('Enter the IP: ')
+username = raw_input('Enter the username:  ')
+password = raw_input('Enter the password:  ')
+uri = 'https://' + IP +':8443/dataservice/device/action/rediscover'
 payload = {'devices':[{'deviceId': "8e897e63-7b79-4622-8040-6aab57fab89e", 'deviceIP': "1.1.1.222"}]}
 payload = json.dumps(payload)
 response = s.post(uri, auth=HTTPBasicAuth('admin', 'Green88!!'), data=payload, verify=False)
