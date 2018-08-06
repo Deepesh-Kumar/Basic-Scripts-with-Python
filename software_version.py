@@ -16,7 +16,7 @@ uri = 'https://' + IP + ':8443/dataservice/device'
 response = s.get(uri, auth=HTTPBasicAuth(username, password), verify=False)
 response_data = response.json()
 for i in response_data['data']:
-	if i['personality'] == 'vedge':
+	if i['personality'] == 'vedge' and i['reachability']  == 'reachable':
 		print i['version'],i['local-system-ip'],i['host-name']
 
 
