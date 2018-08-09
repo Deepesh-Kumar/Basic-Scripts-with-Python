@@ -1,1 +1,1 @@
-# Basic-Scripts-with-Python
+# Simple Scripts
