@@ -7,6 +7,7 @@
 #devices.
 
 
+
 import json
 import requests
 import itertools
@@ -15,36 +16,59 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 s = requests.session()
 
+g = []
+h = []
+#print d['data']
+k = []
+l = []
 
-IP = raw_input("Enter the IP: ") .              # Enter the IP and credentials
-username = raw_input("Enter the username: ")
-password = raw_input("Enter the password:  ")
+def main():
+	IP1 = raw_input('Enter the IP: ')
+	username1 = raw_input('Enter the username: ')
+	password1 = raw_input('Enter the password: ')
+	get_req(IP1,username1,password1)
+	post_req(IP1,username1,password1,p,p1)
 
+def get_req(IP,username,password):
+	uri = 'https://' + IP + '/dataservice/device'  
+	response = s.get(uri, auth=HTTPBasicAuth(username, password), verify=False)
+	d = response.json()
+	for i in d['data']:
+		if i['device-model'] == 'vedge-1000' and i['reachability'] == 'reachable' and i['personality'] =='vedge':
+			h.append(i['local-system-ip'])
+			g.append(i['uuid'])
+		elif i['device-model'] =='vedge-cloud' and i['reachability'] == 'reachable' and i['personality'] == 'vedge':
+			k.append(i['local-system-ip'])
+			l.append(i['uuid'])
 
-uri = 'https://' + IP + '/dataservice/device'        # API Call for Fetching Data
-
-response = s.get(uri, auth=HTTPBasicAuth(username, password), verify=False)
-d = response.json()   # Storing the response 
-
-system_ip = []
-device_id = []
-for i in d['data']:
-	if i['personality'] == 'vedge' and i['reachability'] == 'reachable':
-		system_ip.append(i['local-system-ip'])      #Filtering System IP and Device ID from the data fetched 
-		device_id.append(i['uuid'])             # and appending it to the list 
-							#this can be further modifed to filter based on existing software version
-	
-payload = {"action":"install","input":{"vEdgeVPN":0,"vSmartVPN":0,
+p = {"action":"install","input":{"vEdgeVPN":0,"vSmartVPN":0,
             "data":[{"family":"vedge-mips","version":"18.3.0"}],"versionType":"vmanage","reboot":True,"sync":True},
-            "devices":[{"deviceIP":" ","deviceId":''}],"deviceType":"vedge"} . # Payload to be used for the post call family has to be changed for different device types
+            "devices":[{"deviceIP":" ","deviceId":''}],"deviceType":"vedge"}
 
-urv = 'https://'+ IP + '/dataservice/device/action/install' .   # API Call for Software Upgrade
+p1 = {"action":"install","input":{"vEdgeVPN":0,"vSmartVPN":0,
+            "data":[{"family":"vedge-x86","version":"18.3.0"}],"versionType":"vmanage","reboot":True,"sync":True},
+            "devices":[{"deviceIP":" ","deviceId":''}],"deviceType":"vedge"}
 
-headers={'Content-Type': 'application/json'}
 
-for (i,j) in zip(g,h):
-	payload['devices'][0]['deviceId'] = i   # . Updating values for device Id and 
-	payload['devices'][0]['deviceIP'] = j	# .    device IP
-	json_payload = json.dumps(payload)    
-	response_post = s.post(urv, auth=HTTPBasicAuth(username, password), data = json_payload, headers=headers, verify=False)
-	print response_post .   #Prints the response code for calls made for all iterations
+#print  g
+#print h
+
+def post_req(IP,username,password,payload,payload1):
+	urv = 'https://' + IP  + '/dataservice/device/action/install'
+	headers={'Content-Type': 'application/json'}
+	for (i,j) in zip(g,h):
+		payload['devices'][0]['deviceId'] = i
+		payload['devices'][0]['deviceIP'] = j
+		q = json.dumps(payload)
+		response_post = s.post(urv, auth=HTTPBasicAuth(username, password), data = q, headers=headers, verify=False)
+		print response_post
+	for (o,p) in zip(k,l):
+		payload1['devices'][0]['deviceId'] = p
+		payload1['devices'][0]['deviceIP'] = o
+		e = json.dumps(payload1)
+		response_post_new = s.post(urv, auth=HTTPBasicAuth(username, password), data = e, headers=headers, verify=False)
+		print response_post_new
+
+
+if __name__ == "__main__":
+	main()
