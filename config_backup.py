@@ -30,7 +30,7 @@ c.expect('#')
 c.sendline('request nms configuration-db backup path /home/admin/%s' %today_date )
 c.timeout = 1000
 c.expect('#')
-c.sendline('request execute vpn 512 scp %s.tar.gz me@%s:/home/%s' (%today_date, %backup_server_IP) )
+c.sendline('request execute vpn 512 scp %s.tar.gz me@%s:/home/%s' %(today_date, backup_server_IP,backup_server_username) )
 i = c.expect(['yes/no ', 'password:'])
 if i == 0:
 	c.sendline('yes')
