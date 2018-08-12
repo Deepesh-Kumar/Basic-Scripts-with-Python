@@ -1,3 +1,6 @@
+#Simple Script to login to the NMS (Network Management System) Device and get the config db file and store it in a backup
+#server using pexpect.
+
 
 import pexpect
 import sys
