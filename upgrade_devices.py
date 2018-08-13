@@ -3,8 +3,8 @@
 #This is a simple script for upgrading devices part of a particular overlay. We start with using a API call (GET Request) 
 # to fetch necessary data which includes device types and System IPs (Controllers or vEdge Devices) and use this information 
 # in the next API call(POST Request) to upgrade those devices.
-#The example shown here is done for hardware vEdge Devices, the script can be modifed to upgrade Controllers or software vEdge 
-#devices.
+#The example shown here is done for all vEdge Devices (software and hardware), the script can be modifed to upgrade 
+#Controllers as well.
 
 
 
