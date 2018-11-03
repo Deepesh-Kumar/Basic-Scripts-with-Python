@@ -1,6 +1,7 @@
 import json
 import requests
 import itertools
+import csv
 from requests.auth import HTTPBasicAuth
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -71,21 +72,63 @@ class ch:
 	#	response1 = s.post(urv4, auth=HTTPBasicAuth(self.username, self.password), headers=headers, verify=False)
 	#	print
 
-	def get_appserver_logs(self):
-		url = 'https://' + self.IP + '/dataservice/util/logfile/appserver/lastnlines?lines=100'
-		response12 = s.get(url, auth=HTTPBasicAuth(self.username, self.password), verify=False)
-		print response12.content
+	def get_running_config(self):
+		urv = 'https://' + self.IP + '/dataservice/template/config/running/' 
+		for i in self.g:
+			urv1 = urv + i
+			res = s.get(urv1, auth=HTTPBasicAuth(self.username, self.password), verify=False)
+			e = res.json()
 
+
+	def get_templates(self):
+		urv = 'https://' + self.IP + '/dataservice/template/device'
+		res = s.get(urv, auth=HTTPBasicAuth(self.username, self.password), verify=False)
+		e = res.json()
+		for i in e['data']:
+			print i['templateName'], i['deviceType'], i['templateId'], i['templateDescription']
+
+	def attach_feature_template(self):
+		urv = 'https://' + self.IP + '/dataservice/template/device/config/attachfeature'
+		headers={'Content-Type': 'application/json'}
+		payload = {"deviceTemplateList":[{"templateId":"b64eb57f-57de-404d-9d8c-1a83209d12de",
+		"device":[{"csv-status":"complete","csv-deviceId":"8e897e63-7b79-4622-8040-6aab57fab89e","csv-deviceIP":"1.1.1.222","csv-host-name":"",
+		"//system/host-name":"","//system/system-ip":"","//system/site-id":"","csv-templateId":"b64eb57f-57de-404d-9d8c-1a83209d12de"}],
+		"isEdited":"false","isMasterEdited":"false"}]}
+		with open('DC_vEDGE-CLOUD.csv', 'rU') as f:
+			reader = csv.DictReader(f)
+			data ={}
+			for row in reader:
+				for header , value in row.items():
+					try:
+						data[header].append(value)
+					except KeyError:
+						data[header] = [value]
 		
+		payload['deviceTemplateList'][0]['device'][0]['csv-host-name'] = data['csv-host-name'][0]
+		payload['deviceTemplateList'][0]['device'][0]['//system/host-name'] = data['//system/host-name'][0]
+		payload['deviceTemplateList'][0]['device'][0]['//system/system-ip'] = data['//system/system-ip'][0]
+		payload['deviceTemplateList'][0]['device'][0]['//system/site-id'] = data['//system/site-id'][0]
+		q = json.dumps(payload)
+		response1 = s.post(urv, auth=HTTPBasicAuth(self.username, self.password), data= q, headers=headers, verify=False)
+		print response1, response1.content
+
+    
+
+
+
+
+
+
+
 
 t = []
 u = []
 v = []
 l = []
-a = ch('10.195.168.110', 'deepesh', 'deepesh4321!',t,u,v,l)
+a = ch('x.x.x.x', 'xxx', 'xxxx',t,u,v,l)
 a.get()
 #a.get()
 #a.get_software_version()
 #a.deactivate_policy()
 #a.get_software_version()
-a.get_appserver_logs()
+a.attach_feature_template()
