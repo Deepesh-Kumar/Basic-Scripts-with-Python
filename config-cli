@@ -1,0 +1,119 @@
+import pexpect
+import sys
+import csv
+
+
+with open('t.csv', 'rb') as f:
+	data = [row for row in csv.reader(f)]
+	c = pexpect.spawn('sshpass -p "admin" ssh -o StrictHostKeyChecking=no "admin@%s"' %data[1][0])
+	c.expect('#')
+	c.sendline('config-transaction ')
+	c.logfile = sys.stdout
+	c.expect('#')
+	c.sendline('system ')
+	c.logfile = sys.stdout
+	c.expect('#')
+	c.sendline('system-ip %s '%data[1][2])
+	c.logfile = sys.stdout
+	c.expect('#')
+	c.sendline('organization-name %s '%data[1][3])
+	c.logfile = sys.stdout
+	c.expect('#')
+	c.sendline('site-id %s' %data[1][4])
+	c.logfile = sys.stdout
+	c.expect('#')
+	c.sendline('vbond  %s  ' %data[1][5])
+	c.logfile = sys.stdout
+	c.expect('#')
+	c.sendline('commit')
+	c.logfile = sys.stdout
+	c.expect('#')
+	c.sendline('exit')
+	c.logfile = sys.stdout
+	c.timeout  = 10
+	c.expect('#')
+	c.sendline('exit')
+	c.logfile = sys.stdout
+	c.timeout  = 10
+	c.expect('#')
+	c.close()
+
+with open('next.csv', 'rb') as f:
+	data1 = [row for row in csv.reader(f)]
+	for i in range(1, len(data1)):
+		c = pexpect.spawn('sshpass -p "admin" ssh -o StrictHostKeyChecking=no "admin@%s"' %data1[i][0])
+		c.expect('#')
+		c.sendline('config-transaction ')
+		c.logfile = sys.stdout
+		c.expect('#')
+		c.sendline('interface Tunnel %s ' %data1[i][1])
+		c.logfile = sys.stdout
+		c.expect('#')
+		c.sendline('ip unnumbered  GigabitEthernet0/0/0')
+		c.logfile = sys.stdout
+		c.expect('#')
+		c.sendline('tunnel source GigabitEthernet0/0/0')
+		c.logfile = sys.stdout
+		c.expect('#')
+		c.sendline('tunnel mode sdwan')
+		c.logfile = sys.stdout
+		c.expect('#')
+		c.sendline('top')
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		c.sendline('interface  GigabitEthernet0/0/0')
+		c.logfile = sys.stdout
+		c.expect('#')
+		c.sendline('ip address  %s  ' %data1[i][5])
+		c.logfile = sys.stdout
+		c.expect('#')
+		c.sendline('no shut')
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		c.sendline('top')
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		c.sendline('sdwan')
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		c.sendline('interface GigabitEthernet0/0/0')
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		c.sendline('tunnel-interface')
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		c.sendline('color  %s' %data1[i][7])
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		c.sendline('encapsulation ipsec')
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		c.sendline('top')
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		#c.sendline('ip route 0.0.0.0 0.0.0.0  %s' %data[i][8])
+		#c.logfile = sys.stdout
+		#c.timeout  = 10
+		#c.expect('#')
+		c.sendline('commit')
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		c.sendline('exit')
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		c.sendline('show sdwan control connections')
+		c.logfile = sys.stdout
+		c.timeout  = 10
+		c.expect('#')
+		c.close()
