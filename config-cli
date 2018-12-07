@@ -6,7 +6,7 @@ import csv
 with open('t.csv', 'rb') as f:
 	data = [row for row in csv.reader(f)]
 	for i in range(1, len(data)):
-		c = pexpect.spawn('sshpass -p "admin" ssh -o StrictHostKeyChecking=no "admin@%s"' %data[1][0])
+		c = pexpect.spawn('sshpass -p "admin" ssh -o StrictHostKeyChecking=no "admin@%s"' %data[i][0])
 		c.expect('#')
 		c.sendline('config-transaction ')
 		c.logfile = sys.stdout
@@ -14,16 +14,16 @@ with open('t.csv', 'rb') as f:
 		c.sendline('system ')
 		c.logfile = sys.stdout
 		c.expect('#')
-		c.sendline('system-ip %s '%data[1][2])
+		c.sendline('system-ip %s '%data[i][2])
 		c.logfile = sys.stdout
 		c.expect('#')
-		c.sendline('organization-name %s '%data[1][3])
+		c.sendline('organization-name %s '%data[i][3])
 		c.logfile = sys.stdout
 		c.expect('#')
-		c.sendline('site-id %s' %data[1][4])
+		c.sendline('site-id %s' %data[i][4])
 		c.logfile = sys.stdout
 		c.expect('#')
-		c.sendline('vbond  %s  ' %data[1][5])
+		c.sendline('vbond  %s  ' %data[i][5])
 		c.logfile = sys.stdout
 		c.expect('#')
 		c.sendline('commit')
